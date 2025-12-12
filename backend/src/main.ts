@@ -29,10 +29,7 @@ async function bootstrap() {
     .setTitle('Blog Management API')
     .setDescription('API documentation for Blog Management System')
     .setVersion('1.0')
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('posts', 'Blog posts management')
-    .addTag('categories', 'Post categories management')
-    .addTag('tags', 'Tags management')
+
     .addBearerAuth(
       {
         type: 'http',
@@ -42,7 +39,7 @@ async function bootstrap() {
         description: 'Enter JWT token',
         in: 'header',
       },
-      'JWT-auth', // This name here is important for matching up with @ApiBearerAuth() in your controllers!
+      'JWT-auth',
     )
     .build();
 
@@ -50,6 +47,8 @@ async function bootstrap() {
   SwaggerModule.setup('api/docs', app, document, {
     swaggerOptions: {
       persistAuthorization: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
     },
   });
 
