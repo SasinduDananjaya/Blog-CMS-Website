@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client"
+  output   = "./generated"
+}
+
+datasource db {
+  provider = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model User {
+  id        Int @id @default(autoincrement())
+  uuid      String @unique @default(uuid())
+  name      String
+  email     String @unique
+  password  String
+  role      UserRole @default(USER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  posts Post[]
+  createdCategories PostCategory[]
+
+}
+
+model Post {
+  id           Int @id @default(autoincrement())
+  uuid         String @unique @default(uuid())
+  title        String
+  content      String @db.Text
+  imageUrl     String? @map("image_url")
+  status       PostStatus @default(DRAFT)
+  authorUuid   String @map("author_uuid")
+  categoryUuid String? @map("category_uuid")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  author   User @relation(fields: [authorUuid], references: [uuid], onDelete: Cascade)
+  category PostCategory? @relation(fields: [categoryUuid], references: [uuid], onDelete: SetNull)
+  postTags PostTag[]
+
+}
+
+model PostCategory {
+  id        Int @id @default(autoincrement())
+  uuid      String @unique @default(uuid())
+  name      String @unique
+  createdBy String  @map("created_by")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  creator User @relation(fields: [createdBy], references: [uuid], onDelete: Cascade)
+  posts   Post[]
+}
+
+model Tag {
+  id        Int @id @default(autoincrement())
+  uuid      String  @unique @default(uuid())
+  name      String @unique
+  createdAt DateTime @default(now()) @map("created_at")
+
+  postTags PostTag[]
+
+}
+
+model PostTag {
+  id       Int  @id @default(autoincrement())
+  postUuid String @map("post_uuid")
+  tagUuid  String @map("tag_uuid")
+
+  post Post @relation(fields: [postUuid], references: [uuid], onDelete: Cascade)
+  tag  Tag  @relation(fields: [tagUuid], references: [uuid], onDelete: Cascade)
+
+  @@unique([postUuid, tagUuid])
+
+}
