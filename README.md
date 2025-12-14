@@ -2,7 +2,7 @@
 
 Blog content management system built with NestJS (Backend) and Next.js (Frontend).
 
-![Blog CMS](https://img.shields.io/badge/Blog-CMS-blue)
+
 ![NestJS](https://img.shields.io/badge/NestJS-10.x-red)
 ![Next.js](https://img.shields.io/badge/Next.js-14.x-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue)
