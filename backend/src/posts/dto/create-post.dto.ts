@@ -5,6 +5,7 @@ import {
   IsUUID,
   MinLength,
   IsArray,
+  MaxLength,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 import { PostStatus } from '../../../prisma/generated/client';
@@ -16,6 +17,7 @@ export class CreatePostDto {
 
   @IsString()
   @MinLength(10)
+  @MaxLength(1000)
   content: string;
 
   @IsOptional()

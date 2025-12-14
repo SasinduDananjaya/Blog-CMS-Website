@@ -13,6 +13,7 @@ const adapter = new PrismaPg(pool);
 
 const prisma = new PrismaClient({ adapter });
 
+//insert sample admin user
 async function main() {
   const hashedPassword = await bcrypt.hash('Admin1234', 10);
 

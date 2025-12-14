@@ -297,6 +297,12 @@ export class PostsService {
       this.prisma.post.findMany({
         where: whereClause,
         include: {
+          author: {
+            select: {
+              uuid: true,
+              name: true,
+            },
+          },
           category: true,
           postTags: {
             include: {
