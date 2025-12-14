@@ -100,7 +100,6 @@ export class PostCategoriesService {
       throw new NotFoundException('Category not found');
     }
 
-    // Format posts if included
     if (category.posts) {
       category.posts = category.posts.map((post: any) => {
         const { postTags, ...rest } = post;
