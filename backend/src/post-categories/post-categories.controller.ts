@@ -13,6 +13,7 @@ import {
 import { PostCategoriesService } from './post-categories.service';
 import { CreatePostCategoryDto } from './dto/create-post-category.dto';
 import { UpdatePostCategoryDto } from './dto/update-post-category.dto';
+import { NewPostCategoryStatusDto } from './dto/new-post-category-status-change.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
@@ -36,6 +37,16 @@ export class PostCategoriesController {
   @Get()
   findAll() {
     return this.postCategoriesService.findAll();
+  }
+
+  @Patch(':uuid/status')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(UserRole.ADMIN)
+  changeStatus(
+    @Param('uuid', ParseUUIDPipe) uuid: string,
+    @Body() newStatusDto: NewPostCategoryStatusDto,
+  ) {
+    return this.postCategoriesService.changeStatus(uuid, newStatusDto);
   }
 
   @Get(':uuid')

@@ -1,5 +1,6 @@
 export type UserRole = "ADMIN" | "USER";
 export type PostStatus = "DRAFT" | "PUBLISHED";
+export type Status = "ACTIVE" | "INACTIVE";
 
 //user types
 export interface User {
@@ -21,6 +22,7 @@ export interface Tag {
   id: number;
   uuid: string;
   name: string;
+  newStatus: Status;
   createdAt: string;
   _count?: {
     postTags: number;
@@ -32,6 +34,7 @@ export interface Category {
   id: number;
   uuid: string;
   name: string;
+  newStatus: Status;
   createdAt: string;
   updatedAt: string;
   creator?: {

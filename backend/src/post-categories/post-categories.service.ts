@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreatePostCategoryDto } from './dto/create-post-category.dto';
 import { UpdatePostCategoryDto } from './dto/update-post-category.dto';
 import { PostStatus } from '../../prisma/generated/client';
+import { NewPostCategoryStatusDto } from './dto/new-post-category-status-change.dto';
 
 @Injectable()
 export class PostCategoriesService {
@@ -138,6 +139,34 @@ export class PostCategoriesService {
     return this.prisma.postCategory.update({
       where: { uuid },
       data: updatePostCategoryDto,
+      include: {
+        creator: {
+          select: {
+            uuid: true,
+            name: true,
+          },
+        },
+        _count: {
+          select: { posts: true },
+        },
+      },
+    });
+  }
+
+  async changeStatus(uuid: string, changeStatusDto: NewPostCategoryStatusDto) {
+    const category = await this.prisma.postCategory.findUnique({
+      where: { uuid },
+    });
+
+    if (!category) {
+      throw new NotFoundException('Category not found');
+    }
+
+    return this.prisma.postCategory.update({
+      where: { uuid },
+      data: {
+        newStatus: changeStatusDto.newStatus,
+      },
       include: {
         creator: {
           select: {

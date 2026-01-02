@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import { Tag } from "@/types";
+import { Status, Tag } from "@/types";
 
 export const tagsApi = {
   getAll: async (): Promise<Tag[]> => {
@@ -24,5 +24,10 @@ export const tagsApi = {
 
   delete: async (uuid: string): Promise<void> => {
     await apiClient.delete(`/tags/${uuid}`);
+  },
+
+  changeStatus: async (uuid: string, newStatus: Status): Promise<Tag> => {
+    const response = await apiClient.patch(`/tags/${uuid}/status`, { newStatus });
+    return response.data;
   },
 };

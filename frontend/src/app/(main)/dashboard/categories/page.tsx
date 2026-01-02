@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Category } from "@/types";
+import { Category, Status } from "@/types";
 import { useAuth } from "@/contexts/auth-context";
 import { categoriesApi } from "@/lib/api/categories";
 import { getErrorMessage } from "@/lib/api/client";
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { LoadingSpinner } from "@/components/shared/loading";
 import { Plus, MoreHorizontal, Edit, Trash } from "lucide-react";
+import { CategoryStatusToggle } from "@/components/categories/category-status-toggle";
 
 export default function CategoriesPage() {
   const { isAdmin } = useAuth();
@@ -73,6 +74,20 @@ export default function CategoriesPage() {
       toast.error(getErrorMessage(error));
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleStatusChange = async (uuid: string, newStatus: Status) => {
+    try {
+      await categoriesApi.changeStatus(uuid, newStatus);
+
+      // Update local state instead of refetching
+      setCategories((prev) => prev.map((cat) => (cat.uuid === uuid ? { ...cat, newStatus } : cat)));
+
+      toast.success(`Category ${newStatus === "ACTIVE" ? "activated" : "inactivated"} successfully`);
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      throw error;
     }
   };
 
@@ -134,6 +149,7 @@ export default function CategoriesPage() {
                 <TableHead>Posts</TableHead>
                 <TableHead>Created By</TableHead>
                 <TableHead>Created</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="w-16">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -146,6 +162,9 @@ export default function CategoriesPage() {
                   </TableCell>
                   <TableCell>{category.creator?.name || "-"}</TableCell>
                   <TableCell>{formatDate(category.createdAt)}</TableCell>
+                  <TableCell>
+                    <CategoryStatusToggle category={category} onStatusChange={handleStatusChange} />
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

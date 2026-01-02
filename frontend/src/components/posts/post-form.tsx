@@ -190,11 +190,13 @@ export function PostForm({ post, mode }: PostFormProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.uuid} value={category.uuid}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
+                        {categories
+                          .filter((category) => category.newStatus === "ACTIVE")
+                          .map((category) => (
+                            <SelectItem key={category.uuid} value={category.uuid}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -231,17 +233,19 @@ export function PostForm({ post, mode }: PostFormProps) {
               <div className="space-y-2">
                 <Label>Tags</Label>
                 <div className="flex flex-wrap gap-2">
-                  {tags.map((tag) => (
-                    <Badge
-                      key={tag.uuid}
-                      variant={selectedTags.includes(tag.uuid) ? "default" : "outline"}
-                      className="cursor-pointer"
-                      onClick={() => toggleTag(tag.uuid)}
-                    >
-                      {tag.name}
-                      {selectedTags.includes(tag.uuid) && <X className="h-3 w-3 ml-1" />}
-                    </Badge>
-                  ))}
+                  {tags
+                    .filter((tag) => tag.newStatus === "ACTIVE")
+                    .map((tag) => (
+                      <Badge
+                        key={tag.uuid}
+                        variant={selectedTags.includes(tag.uuid) ? "default" : "outline"}
+                        className="cursor-pointer"
+                        onClick={() => toggleTag(tag.uuid)}
+                      >
+                        {tag.name}
+                        {selectedTags.includes(tag.uuid) && <X className="h-3 w-3 ml-1" />}
+                      </Badge>
+                    ))}
                 </div>
               </div>
             )}

@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import { Category } from "@/types";
+import { Category, Status } from "@/types";
 
 export const categoriesApi = {
   getAll: async (): Promise<Category[]> => {
@@ -26,5 +26,10 @@ export const categoriesApi = {
 
   delete: async (uuid: string): Promise<void> => {
     await apiClient.delete(`/post-categories/${uuid}`);
+  },
+
+  changeStatus: async (uuid: string, newStatus: Status): Promise<Category> => {
+    const response = await apiClient.patch(`/post-categories/${uuid}/status`, { newStatus });
+    return response.data;
   },
 };

@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateTagDto } from './dto/create-tag.dto';
 import { UpdateTagDto } from './dto/update-tag.dto';
+import { NewTagStatusDto } from './dto/new-tag-status-change.dto';
 
 @Injectable()
 export class TagsService {
@@ -78,6 +79,28 @@ export class TagsService {
     return this.prisma.tag.update({
       where: { uuid },
       data: updateTagDto,
+    });
+  }
+
+  async changeStatus(uuid: string, changeStatusDto: NewTagStatusDto) {
+    const tag = await this.prisma.tag.findUnique({
+      where: { uuid },
+    });
+
+    if (!tag) {
+      throw new NotFoundException('Tag not found');
+    }
+
+    return this.prisma.tag.update({
+      where: { uuid },
+      data: {
+        newStatus: changeStatusDto.newStatus,
+      },
+      include: {
+        _count: {
+          select: { postTags: true },
+        },
+      },
     });
   }
 

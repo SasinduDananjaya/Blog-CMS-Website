@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Tag } from "@/types";
+import { Tag, Status } from "@/types";
 import { useAuth } from "@/contexts/auth-context";
 import { tagsApi } from "@/lib/api/tags";
 import { getErrorMessage } from "@/lib/api/client";
@@ -30,6 +30,7 @@ import { Plus, MoreHorizontal, Edit, Trash, Loader2 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
+import { TagStatusToggle } from "@/components/tags/tag-status-toggle";
 
 const tagSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters").max(30),
@@ -100,6 +101,18 @@ export default function TagsPage() {
     }
   };
 
+  const handleStatusChange = async (uuid: string, newStatus: Status) => {
+    try {
+      await tagsApi.changeStatus(uuid, newStatus);
+      setTags((prev) => prev.map((tag) => (tag.uuid === uuid ? { ...tag, newStatus } : tag)));
+
+      toast.success(`Tag ${newStatus === "ACTIVE" ? "activated" : "inactivated"} successfully`);
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+      throw error;
+    }
+  };
+
   const handleDelete = async () => {
     if (!deleteId) return;
     setIsSubmitting(true);
@@ -158,6 +171,7 @@ export default function TagsPage() {
                 <TableHead>Name</TableHead>
                 <TableHead>Posts</TableHead>
                 <TableHead>Created</TableHead>
+                <TableHead>Status</TableHead>
                 <TableHead className="w-16">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -169,6 +183,9 @@ export default function TagsPage() {
                     <Badge variant="secondary">{tag._count?.postTags || 0} posts</Badge>
                   </TableCell>
                   <TableCell>{formatDate(tag.createdAt)}</TableCell>
+                  <TableCell>
+                    <TagStatusToggle tag={tag} onStatusChange={handleStatusChange} />
+                  </TableCell>
                   <TableCell>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
